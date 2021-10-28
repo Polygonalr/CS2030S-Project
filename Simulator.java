@@ -10,7 +10,7 @@ public class Simulator {
     private final PriorityQueue<Event> eventList;
     private final PriorityQueue<Event> finalEventList;
     private final ServerList serverList;
-    // private final LinkedList<Double> breakTimeList;
+    private final LinkedList<Double> breakTimeList;
     private final Statistics statistics;
     private final boolean dumbCustomers;
 
@@ -23,11 +23,12 @@ public class Simulator {
      * Dummy JavaDoc.
      */
     public Simulator(List<Double> arrivalTimes, List<Double> serveTimes, int numberOfServers,
-            int maxQueueLength, boolean dumbCustomers) {
+            int maxQueueLength, LinkedList<Double> breakTimeList, boolean dumbCustomers) {
         this.eventList = new PriorityQueue<Event>(new EventComparator());
         this.finalEventList = new PriorityQueue<Event>(new EventComparator());
         this.serverList = new ServerList();
         this.statistics = new Statistics();
+        this.breakTimeList = breakTimeList;
         this.dumbCustomers = dumbCustomers;
         for (int i = 0; i < numberOfServers; i++) {
             this.serverList.add(new Server(i + 1, maxQueueLength));

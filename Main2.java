@@ -1,6 +1,7 @@
 import java.util.Scanner;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import cs2030.simulator.Simulator;
 
@@ -9,7 +10,7 @@ class Main2 {
         Scanner sc = new Scanner(System.in);
         List<Double> arrivalTimes = new ArrayList<Double>();
         List<Double> serveTimes = new ArrayList<Double>();
-        List<Double> restTimes = new ArrayList<Double>();
+        LinkedList<Double> restTimes = new LinkedList<Double>();
         int numberOfServers = 1;
         int maxQueueLength = 1;
 
@@ -27,7 +28,7 @@ class Main2 {
             restTimes.add(0.0);
         }
         Simulator s = new Simulator(arrivalTimes, serveTimes, numberOfServers,
-                maxQueueLength, true);
+                maxQueueLength, restTimes, true);
         s.simulate(false);
     }
 }
