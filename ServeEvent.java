@@ -1,19 +1,21 @@
 package cs2030.simulator;
 
 import java.util.Optional;
+import java.util.LinkedList;
 
 class ServeEvent extends Event {
     private final Server server;
     private static final int SERVE_PRIORITY = 2;
 
-    ServeEvent(double time, Customer customer, ServerList serverList, Server server) {
-        super(time, customer, serverList, SERVE_PRIORITY);
+    ServeEvent(double time, Customer customer, ServerList serverList, Server server,
+            LinkedList<Double> restTimes) {
+        super(time, customer, serverList, SERVE_PRIORITY, restTimes);
         this.server = server;
     }
 
     public Optional<Event> execute() {
         return Optional.of(new DoneEvent(this.getDoneTime(), super.getCustomer(),
-                    super.getServerList(), server));
+                    super.getServerList(), server, this.getRestTimes()));
     }
 
     public double getDoneTime() {

@@ -1,6 +1,7 @@
 package cs2030.simulator;
 
 import java.util.Optional;
+import java.util.LinkedList;
 
 class ArrivalEvent extends Event {
     private final Statistics statistics;
@@ -8,8 +9,8 @@ class ArrivalEvent extends Event {
     private static final int ARRIVAL_PRIORITY = 1;
 
     ArrivalEvent(Customer customer, ServerList serverList, Statistics statistics,
-            boolean dumbCustomers) {
-        super(customer, serverList, ARRIVAL_PRIORITY);
+            boolean dumbCustomers, LinkedList<Double> restTimes) {
+        super(customer, serverList, ARRIVAL_PRIORITY, restTimes);
         this.statistics = statistics;
         this.dumbCustomers = dumbCustomers;
     }
@@ -28,7 +29,8 @@ class ArrivalEvent extends Event {
                     super.getCustomer().getArrivalTime(),
                     super.getCustomer(),
                     super.getServerList(),
-                    server
+                    server,
+                    this.getRestTimes()
                 );
             }
         );
@@ -46,7 +48,8 @@ class ArrivalEvent extends Event {
                     return new WaitEvent(
                         super.getCustomer().getArrivalTime(), super.getCustomer(),
                         super.getServerList(),
-                        server
+                        server,
+                        this.getRestTimes()
                     );
                 }
             );
@@ -54,7 +57,7 @@ class ArrivalEvent extends Event {
         // Or else, transform to LeaveEvent
         Event newEvent = transformedEvent.orElseGet(() -> {
             statistics.countLeftCustomer();
-            return new LeaveEvent(super.getCustomer(), super.getServerList());
+            return new LeaveEvent(super.getCustomer(), super.getServerList(), this.getRestTimes());
         });
         return Optional.<Event>of(newEvent);
     }

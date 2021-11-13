@@ -37,6 +37,6 @@ class Main3 {
         }
         Simulator s = new Simulator(arrivalTimes, serveTimes, numberOfServers,
                 maxQueueLength, restTimes, false);
-        s.simulate(false);
+        s.simulate(true);
     }
 }

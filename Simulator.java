@@ -10,7 +10,7 @@ public class Simulator {
     private final PriorityQueue<Event> eventList;
     private final PriorityQueue<Event> finalEventList;
     private final ServerList serverList;
-    private final LinkedList<Double> breakTimeList;
+    private final LinkedList<Double> restTimes;
     private final Statistics statistics;
     private final boolean dumbCustomers;
 
@@ -23,19 +23,20 @@ public class Simulator {
      * Dummy JavaDoc.
      */
     public Simulator(List<Double> arrivalTimes, List<Double> serveTimes, int numberOfServers,
-            int maxQueueLength, LinkedList<Double> breakTimeList, boolean dumbCustomers) {
+            int maxQueueLength, LinkedList<Double> restTimes, boolean dumbCustomers) {
         this.eventList = new PriorityQueue<Event>(new EventComparator());
         this.finalEventList = new PriorityQueue<Event>(new EventComparator());
         this.serverList = new ServerList();
         this.statistics = new Statistics();
-        this.breakTimeList = breakTimeList;
+        this.restTimes = restTimes;
         this.dumbCustomers = dumbCustomers;
         for (int i = 0; i < numberOfServers; i++) {
             this.serverList.add(new Server(i + 1, maxQueueLength));
         }
         for (int i = 0; i < arrivalTimes.size(); i++) {
             Event arrivalEvent = new ArrivalEvent(new Customer(i + 1, arrivalTimes.get(i),
-                    serveTimes.get(i)), this.serverList, this.statistics, this.dumbCustomers);
+                    serveTimes.get(i)), this.serverList, this.statistics, this.dumbCustomers,
+                    this.restTimes);
             eventList.add(arrivalEvent);
             finalEventList.add(arrivalEvent);
         }
@@ -60,11 +61,22 @@ public class Simulator {
         return toReturn;
     }
 
+    private String getCurrentRestTimeQueueString() {
+        String toReturn = "[";
+        for (int i = 0; i < this.restTimes.size(); i++) {
+            toReturn += this.restTimes.get(i) + ", ";
+        }
+        return toReturn + "]";
+    }
+
     private String getFullEventString() {
         PriorityQueue<Event> finalEventListCopy = new PriorityQueue<Event>(finalEventList);
         String toReturn = "";
         while (!finalEventListCopy.isEmpty()) {
-            toReturn += finalEventListCopy.poll().toString() + "\n";
+            String nextEvent = finalEventListCopy.poll().toString();
+            if (!nextEvent.contains("resting")) {
+                toReturn += nextEvent + "\n";
+            }
         }
         return toReturn;
     }
@@ -82,7 +94,8 @@ public class Simulator {
             });
             if (debug) {
                 System.out.println("\n" + this.getCurrentEventString() + "\n"
-                        + this.getCurrentServerQueueString());
+                        + this.getCurrentServerQueueString() + "\n"
+                        + this.getCurrentRestTimeQueueString());
             }
         }
         System.out.print(this.getFullEventString());

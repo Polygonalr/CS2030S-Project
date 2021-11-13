@@ -1,12 +1,13 @@
 package cs2030.simulator;
 
 import java.util.Optional;
+import java.util.LinkedList;
 
 class LeaveEvent extends Event {
     private static final int LEAVE_PRIORITY = 5;
     
-    LeaveEvent(Customer customer, ServerList serverList) {
-        super(customer, serverList, LEAVE_PRIORITY);
+    LeaveEvent(Customer customer, ServerList serverList, LinkedList<Double> restTimes) {
+        super(customer, serverList, LEAVE_PRIORITY, restTimes);
     }
 
     public Optional<Event> execute() {

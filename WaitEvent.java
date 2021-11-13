@@ -1,13 +1,15 @@
 package cs2030.simulator;
 
 import java.util.Optional;
+import java.util.LinkedList;
 
 class WaitEvent extends Event {
     private final Server server;
     private static final int WAIT_PRIORITY = 3;
 
-    WaitEvent(double time, Customer customer, ServerList serverList, Server server) {
-        super(time, customer, serverList, WAIT_PRIORITY);
+    WaitEvent(double time, Customer customer, ServerList serverList, Server server,
+            LinkedList<Double> restTimes) {
+        super(time, customer, serverList, WAIT_PRIORITY, restTimes);
         this.server = server;
     }
 
@@ -15,7 +17,8 @@ class WaitEvent extends Event {
         double time = this.server.getDoneTimeOf(
                 super.getCustomer()) - super.getCustomer().getServeTime();
         return Optional.<Event>of(
-            new ServeEvent(time, super.getCustomer(), super.getServerList(), server)
+            new ServeEvent(time, super.getCustomer(), super.getServerList(), server,
+                    this.getRestTimes())
         );
     }
 
