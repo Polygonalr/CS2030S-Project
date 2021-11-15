@@ -42,6 +42,6 @@ class Main4 {
         }
         Simulator s = new Simulator(arrivalTimes, serveTimes, numberOfServers,
                 maxQueueLength, restTimes, true, selfcheckoutCount);
-        s.simulate(false);
+        s.simulate(true);
     }
 }

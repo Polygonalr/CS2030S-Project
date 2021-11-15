@@ -2,6 +2,7 @@ package cs2030.simulator;
 
 import java.util.Optional;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.LinkedList;
 
 class ServerList extends ArrayList<Server> {
@@ -79,7 +80,7 @@ class ServerList extends ArrayList<Server> {
         if (index == -1) {
             throw new ArrayIndexOutOfBoundsException("Can't find server to set availability!");
         }
-        this.set(index, s.setUnavailable());
+        this.set(index, this.get(index).setUnavailable());
         return true;
     }
 
@@ -114,6 +115,24 @@ class ServerList extends ArrayList<Server> {
             throw new ArrayIndexOutOfBoundsException("Can't find server to set availability!");
         }
         this.set(index, this.get(index).setNextAvailableTime(t));
+        return true;
+    }
+
+    public boolean addCustomerToQueue(Server s, Map.Entry<Customer, Double> newCustomer) {
+        int index = this.indexOf(s);
+        if (index == -1) {
+            throw new ArrayIndexOutOfBoundsException("Can't find server to set availability!");
+        }
+        this.set(index, this.get(index).addCustomerToQueue(newCustomer));
+        return true;
+    }
+
+    public boolean serveNext(Server s) {
+        int index = this.indexOf(s);
+        if (index == -1) {
+            throw new ArrayIndexOutOfBoundsException("Can't find server to set availability!");
+        }
+        this.set(index, this.get(index).serveNext());
         return true;
     }
 }

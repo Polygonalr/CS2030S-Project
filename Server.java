@@ -2,19 +2,31 @@ package cs2030.simulator;
 
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 
 class Server implements Comparable<Server> {
     private final int id;
     private final LinkedList<Map.Entry<Customer, Double>> queue; // double is donetime
+    private final Optional<Map.Entry<Customer, Double>> currentCustomer;
     private final int maxQueueLength;
     private final boolean available;
     private final double nextAvailableTime;
-    private static final double BIG_DOUBLE = 99999.9;
 
     Server(int id, int maxQueueLength) {
         this.id = id;
         this.queue = new LinkedList<Map.Entry<Customer, Double>>();
+        this.currentCustomer = Optional.empty(); 
         this.maxQueueLength = maxQueueLength;
+        this.available = true;
+        this.nextAvailableTime = 0.0;
+    }
+
+    // Literally only for SelfCheckout, hacky way to make sure they share the same queue
+    protected Server(int id, LinkedList<Map.Entry<Customer, Double>> queue) {
+        this.id = id;
+        this.queue = queue;
+        this.currentCustomer = Optional.empty(); 
+        this.maxQueueLength = -1;
         this.available = true;
         this.nextAvailableTime = 0.0;
     }
@@ -22,6 +34,7 @@ class Server implements Comparable<Server> {
     Server(Server s, boolean available) {
         this.id = s.id;
         this.queue = s.queue;
+        this.currentCustomer = s.currentCustomer;
         this.maxQueueLength = s.maxQueueLength;
         this.available = available;
         this.nextAvailableTime = s.nextAvailableTime;
@@ -30,21 +43,30 @@ class Server implements Comparable<Server> {
     Server(Server s, double nextAvailableTime) {
         this.id = s.id;
         this.queue = s.queue;
+        this.currentCustomer = s.currentCustomer;
         this.maxQueueLength = s.maxQueueLength;
         this.available = s.available;
         this.nextAvailableTime = nextAvailableTime;
     }
 
+    Server(Server s, Optional<Map.Entry<Customer, Double>> currentCustomer) {
+        this.id = s.id;
+        this.queue = s.queue;
+        this.currentCustomer = currentCustomer;
+        this.maxQueueLength = s.maxQueueLength;
+        this.available = s.available;
+        this.nextAvailableTime = s.nextAvailableTime;
+    }
+
     public int getId() {
         return this.id;
     }
+    
+    public Optional<Map.Entry<Customer, Double>> getCurrentCustomer() {
+        return this.currentCustomer;
+    }
 
     public double getNextAvailableTime() {
-        // if (this.queue.size() > 0) {
-        //     return this.queue.getLast().getValue().doubleValue();
-        // }
-        // // It should never reach this point but this is added for completioness
-        // return BIG_DOUBLE;
         return this.nextAvailableTime;
     }
 
@@ -54,22 +76,28 @@ class Server implements Comparable<Server> {
     }
 
     public Server serveNext() {
-        this.queue.removeFirst();
-        return this;
+        Optional<Map.Entry<Customer, Double>> nextCustomer = Optional.ofNullable(this.queue.poll());
+        return new Server(this, nextCustomer);
     }
 
-    public Server addCustomerToQueue(Map.Entry<Customer, Double> customer)
+    public Server addCustomerToQueue(Map.Entry<Customer, Double> newCustomer)
             throws ArrayIndexOutOfBoundsException {
-        if (this.queue.size() >= this.maxQueueLength + 1) {
-            throw new ArrayIndexOutOfBoundsException(String.format("Error adding Customer to a"
-                    + " full queue for server %d", this.id));
-        }
-        this.queue.addLast(customer);
-        return this;
+        this.currentCustomer.ifPresent​(
+            unused -> {
+                if (this.queue.size() >= this.maxQueueLength) {
+                throw new ArrayIndexOutOfBoundsException(String.format("Error adding "
+                        + "Customer to a full queue for server %d", this.id));
+                }
+                this.queue.addLast(newCustomer);
+            }
+        );
+        Optional<Map.Entry<Customer, Double>> newCurrentCustomer = Optional.of(this.currentCustomer
+                .orElse(newCustomer));
+        return new Server(this, newCurrentCustomer);
     }
 
     public boolean hasQueueSlot() {
-        return this.queue.size() < this.maxQueueLength + 1;
+        return this.queue.size() < this.maxQueueLength;
     }
 
     public int getQueueLength() {
@@ -77,7 +105,7 @@ class Server implements Comparable<Server> {
     }
 
     public boolean isServing() {
-        return this.queue.size() > 0;
+        return this.currentCustomer.isPresent();
     }
 
     public Server setAvailable() {
@@ -98,7 +126,7 @@ class Server implements Comparable<Server> {
 
     @Override
     public String toString() {
-        String toReturn = String.format("Server %d: [", this.id);
+        String toReturn = String.format("Server %d: %s [",  this.id, this.currentCustomer.map(x -> x.getKey().toString()).orElse("None"));
         for (int i = 0; i < this.queue.size(); i++) {
             toReturn += queue.get(i).getKey().toString() + ", ";
         }

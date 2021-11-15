@@ -1,6 +1,7 @@
 package cs2030.simulator;
 
 import java.util.Optional;
+import java.util.Map;
 import java.util.LinkedList;
 
 class ArrivalEvent extends Event {
@@ -21,7 +22,7 @@ class ArrivalEvent extends Event {
         Optional<Event> transformedEvent = super.getServerList().getAvailableServer().<Event>map(
             server -> {
                 statistics.countServedCustomer();
-                server.addCustomerToQueue(Pair.of(
+                super.getServerList().addCustomerToQueue(server, Pair.of(
                     super.getCustomer(),
                     super.getTime() + super.getCustomer().getServeTime()
                 ));
@@ -40,7 +41,7 @@ class ArrivalEvent extends Event {
                 server -> {
                     this.statistics.countServedCustomer();
                     // this.statistics.addWaitTime(server.getNextAvailableTime() - super.getTime());
-                    server.addCustomerToQueue(Pair.of(
+                    super.getServerList().addCustomerToQueue(server, Pair.of(
                         super.getCustomer(),
                         server.getNextAvailableTime() + super.getCustomer().getServeTime()
                     ));

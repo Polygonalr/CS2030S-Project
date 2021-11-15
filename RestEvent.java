@@ -16,7 +16,7 @@ class RestEvent extends Event {
 
     public Optional<Event> execute() {
         this.getServerList().setAvailable(this.server);
-        this.server.serveNext();
+        this.getServerList().serveNext(this.server);
         return Optional.empty();
     }
 
