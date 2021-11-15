@@ -39,8 +39,8 @@ class ArrivalEvent extends Event {
         transformedEvent = transformedEvent.or(() -> {
             return super.getServerList().getServerWithQueueSlot(false, dumbCustomers).<Event>map(
                 server -> {
-                    statistics.countServedCustomer();
-                    statistics.addWaitTime(server.getNextAvailableTime() - super.getTime());
+                    this.statistics.countServedCustomer();
+                    // this.statistics.addWaitTime(server.getNextAvailableTime() - super.getTime());
                     server.addCustomerToQueue(Pair.of(
                         super.getCustomer(),
                         server.getNextAvailableTime() + super.getCustomer().getServeTime()
@@ -49,7 +49,8 @@ class ArrivalEvent extends Event {
                         super.getCustomer().getArrivalTime(), super.getCustomer(),
                         super.getServerList(),
                         server,
-                        this.getRestTimes()
+                        this.getRestTimes(),
+                        this.statistics
                     );
                 }
             );

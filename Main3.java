@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import cs2030.simulator.Simulator;
 
 class Main3 {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         Scanner sc = new Scanner(System.in);
         List<Double> arrivalTimes = new ArrayList<Double>();
         List<Double> serveTimes = new ArrayList<Double>();
@@ -36,7 +36,7 @@ class Main3 {
             restTimes.addLast(sc.nextDouble());
         }
         Simulator s = new Simulator(arrivalTimes, serveTimes, numberOfServers,
-                maxQueueLength, restTimes, false);
-        s.simulate(true);
+                maxQueueLength, restTimes, true);
+        s.simulate(false);
     }
 }

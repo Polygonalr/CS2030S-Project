@@ -58,4 +58,47 @@ class ServerList extends ArrayList<Server> {
         }
         return chosenServer;
     }
+
+    public boolean setUnavailable(Server s) throws ArrayIndexOutOfBoundsException {
+        int index = this.indexOf(s);
+        if (index == -1) {
+            throw new ArrayIndexOutOfBoundsException("Can't find server to set availability!");
+        }
+        this.set(index, s.setUnavailable());
+        return true;
+    }
+
+    public boolean isAvailable(Server s) throws ArrayIndexOutOfBoundsException {
+        int index = this.indexOf(s);
+        if (index == -1) {
+            throw new ArrayIndexOutOfBoundsException("Can't find server to set availability!");
+        }
+        return this.get(index).isAvailable();
+    }
+
+    public boolean setAvailable(Server s) throws ArrayIndexOutOfBoundsException {
+        int index = this.indexOf(s);
+        if (index == -1) {
+            throw new ArrayIndexOutOfBoundsException("Can't find server to set availability!");
+        }
+        this.set(index, this.get(index).setAvailable());
+        return true;
+    }
+
+    public double getNextAvailableTime(Server s) throws ArrayIndexOutOfBoundsException {
+        int index = this.indexOf(s);
+        if (index == -1) {
+            throw new ArrayIndexOutOfBoundsException("Can't find server to set availability!");
+        }
+        return this.get(index).getNextAvailableTime();
+    }
+
+    public boolean setNextAvailableTime(Server s, double t) throws ArrayIndexOutOfBoundsException {
+        int index = this.indexOf(s);
+        if (index == -1) {
+            throw new ArrayIndexOutOfBoundsException("Can't find server to set availability!");
+        }
+        this.set(index, this.get(index).setNextAvailableTime(t));
+        return true;
+    }
 }

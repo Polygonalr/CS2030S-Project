@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import cs2030.simulator.Simulator;
 
 class Main2 {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         Scanner sc = new Scanner(System.in);
         List<Double> arrivalTimes = new ArrayList<Double>();
         List<Double> serveTimes = new ArrayList<Double>();

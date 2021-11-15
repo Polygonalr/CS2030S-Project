@@ -3,16 +3,36 @@ package cs2030.simulator;
 import java.util.LinkedList;
 import java.util.Map;
 
-class Server {
+class Server implements Comparable<Server> {
     private final int id;
     private final LinkedList<Map.Entry<Customer, Double>> queue; // double is donetime
     private final int maxQueueLength;
+    private final boolean available;
+    private final double nextAvailableTime;
     private static final double BIG_DOUBLE = 99999.9;
 
     Server(int id, int maxQueueLength) {
         this.id = id;
         this.queue = new LinkedList<Map.Entry<Customer, Double>>();
         this.maxQueueLength = maxQueueLength;
+        this.available = true;
+        this.nextAvailableTime = 0.0;
+    }
+
+    Server(Server s, boolean available) {
+        this.id = s.id;
+        this.queue = s.queue;
+        this.maxQueueLength = s.maxQueueLength;
+        this.available = available;
+        this.nextAvailableTime = s.nextAvailableTime;
+    }
+
+    Server(Server s, double nextAvailableTime) {
+        this.id = s.id;
+        this.queue = s.queue;
+        this.maxQueueLength = s.maxQueueLength;
+        this.available = s.available;
+        this.nextAvailableTime = nextAvailableTime;
     }
 
     public int getId() {
@@ -20,10 +40,12 @@ class Server {
     }
 
     public double getNextAvailableTime() {
-        if (this.queue.size() > 0) {
-            return this.queue.getLast().getValue().doubleValue();
-        }
-        return BIG_DOUBLE;
+        // if (this.queue.size() > 0) {
+        //     return this.queue.getLast().getValue().doubleValue();
+        // }
+        // // It should never reach this point but this is added for completioness
+        // return BIG_DOUBLE;
+        return this.nextAvailableTime;
     }
 
     public double getDoneTimeOf(Customer customer) {
@@ -58,12 +80,39 @@ class Server {
         return this.queue.size() > 0;
     }
 
+    public Server setAvailable() {
+        return new Server(this, true);
+    }
+
+    public Server setUnavailable() {
+        return new Server(this, false);
+    }
+
+    public boolean isAvailable() {
+        return this.available;
+    }
+
+    public Server setNextAvailableTime(double time) {
+        return new Server(this, time);
+    }
+
     @Override
     public String toString() {
         String toReturn = String.format("Server %d: [", this.id);
         for (int i = 0; i < this.queue.size(); i++) {
             toReturn += queue.get(i).getKey().toString() + ", ";
         }
-        return toReturn + "]\n";
+        return toReturn + "] " + (this.available ? "avail" : "unavail") + "\n";
+    }
+
+    public int compareTo(Server s) {
+        return this.id - s.id;
+    }
+
+    public boolean equals(Object o) {
+        if (o instanceof Server) {
+            return this.id == ((Server) o).id;
+        }
+        return super.equals(o);
     }
 }

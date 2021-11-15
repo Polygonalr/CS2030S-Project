@@ -5,15 +5,18 @@ import java.util.LinkedList;
 
 class RestEvent extends Event {
     private final Server server;
-    private static final int REST_PRIORITY = 5;
+    private static final int REST_PRIORITY = 3;
 
     RestEvent(double time, Customer customer, ServerList serverList, Server server,
             LinkedList<Double> restTimes) {
-        super(time, customer, serverList, REST_PRIORITY, restTimes);
+        super(time, customer, serverList, REST_PRIORITY, restTimes, false);
         this.server = server;
+        serverList.setUnavailable(server);
+        serverList.setNextAvailableTime(server, time);
     }
 
     public Optional<Event> execute() {
+        this.getServerList().setAvailable(this.server);
         this.server.serveNext();
         return Optional.empty();
     }

@@ -5,20 +5,36 @@ import java.util.LinkedList;
 
 class WaitEvent extends Event {
     private final Server server;
-    private static final int WAIT_PRIORITY = 3;
+    private final Statistics statistics;
+    private static final int WAIT_PRIORITY = 5;
 
     WaitEvent(double time, Customer customer, ServerList serverList, Server server,
-            LinkedList<Double> restTimes) {
-        super(time, customer, serverList, WAIT_PRIORITY, restTimes);
+            LinkedList<Double> restTimes, Statistics statistics) {
+        super(time, customer, serverList, WAIT_PRIORITY, restTimes, true);
         this.server = server;
+        this.statistics = statistics;
     }
 
-    public Optional<Event> execute() {
-        double time = this.server.getDoneTimeOf(
-                super.getCustomer()) - super.getCustomer().getServeTime();
+    WaitEvent(WaitEvent w, double time) {
+        super(time, w.getCustomer(), w.getServerList(), WAIT_PRIORITY, w.getRestTimes(), false);
+        this.server = w.server;
+        this.statistics = w.statistics;
+    }
+
+    public Optional<Event> execute() throws Exception {
+        double serverNextAvailableTime = this.getServerList().getNextAvailableTime(this.server);
+        if (serverNextAvailableTime == 0.0) {
+            throw new Exception("Something went wrong, nextAvailableTime not updated correctly");
+        }
+        this.statistics.addWaitTime(serverNextAvailableTime - this.getTime());
+        if (this.getServerList().isAvailable(this.server)) {
+            return Optional.<Event>of(
+                new ServeEvent(serverNextAvailableTime, super.getCustomer(),
+                        super.getServerList(), server, this.getRestTimes())
+            );
+        }
         return Optional.<Event>of(
-            new ServeEvent(time, super.getCustomer(), super.getServerList(), server,
-                    this.getRestTimes())
+            new WaitEvent(this, serverNextAvailableTime)
         );
     }
 

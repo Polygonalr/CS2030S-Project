@@ -9,8 +9,10 @@ class DoneEvent extends Event {
 
     DoneEvent(double time, Customer customer, ServerList serverList, Server server,
             LinkedList<Double> restTimes) {
-        super(time, customer, serverList, DONE_PRIORITY, restTimes);
+        super(time, customer, serverList, DONE_PRIORITY, restTimes, true);
         this.server = server;
+        serverList.setUnavailable(server);
+        serverList.setNextAvailableTime(server, time);
     }
 
     public Optional<Event> execute() {

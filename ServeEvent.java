@@ -9,8 +9,10 @@ class ServeEvent extends Event {
 
     ServeEvent(double time, Customer customer, ServerList serverList, Server server,
             LinkedList<Double> restTimes) {
-        super(time, customer, serverList, SERVE_PRIORITY, restTimes);
+        super(time, customer, serverList, SERVE_PRIORITY, restTimes, true);
         this.server = server;
+        serverList.setUnavailable(server);
+        serverList.setNextAvailableTime(server, time);
     }
 
     public Optional<Event> execute() {

@@ -23,7 +23,8 @@ public class Simulator {
      * Dummy JavaDoc.
      */
     public Simulator(List<Double> arrivalTimes, List<Double> serveTimes, int numberOfServers,
-            int maxQueueLength, LinkedList<Double> restTimes, boolean dumbCustomers) {
+            int maxQueueLength, LinkedList<Double> restTimes, boolean dumbCustomers)
+            throws Exception {
         this.eventList = new PriorityQueue<Event>(new EventComparator());
         this.finalEventList = new PriorityQueue<Event>(new EventComparator());
         this.serverList = new ServerList();
@@ -73,9 +74,9 @@ public class Simulator {
         PriorityQueue<Event> finalEventListCopy = new PriorityQueue<Event>(finalEventList);
         String toReturn = "";
         while (!finalEventListCopy.isEmpty()) {
-            String nextEvent = finalEventListCopy.poll().toString();
-            if (!nextEvent.contains("resting")) {
-                toReturn += nextEvent + "\n";
+            Event nextEvent = finalEventListCopy.poll();
+            if (nextEvent.toAddToFinal()) {
+                toReturn += nextEvent.toString() + "\n";
             }
         }
         return toReturn;
@@ -84,7 +85,7 @@ public class Simulator {
     /**
      * Dummy JavaDoc.
      */
-    public void simulate(boolean debug) {
+    public void simulate(boolean debug) throws Exception {
         while (!this.eventList.isEmpty()) {
             Event currentEvent = this.eventList.poll();
             Optional<Event> newEvent = currentEvent.execute();
