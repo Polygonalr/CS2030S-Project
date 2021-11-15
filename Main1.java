@@ -24,7 +24,7 @@ class Main1 {
             restTimes.add(0.0);
         }
         Simulator s = new Simulator(arrivalTimes, serveTimes, numberOfServers,
-                maxQueueLength, restTimes, true);
+                maxQueueLength, restTimes, true, 0);
         s.simulate(false);
     }
 }

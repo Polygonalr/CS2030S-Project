@@ -36,7 +36,7 @@ class Main3 {
             restTimes.addLast(sc.nextDouble());
         }
         Simulator s = new Simulator(arrivalTimes, serveTimes, numberOfServers,
-                maxQueueLength, restTimes, true);
+                maxQueueLength, restTimes, true, 0);
         s.simulate(false);
     }
 }

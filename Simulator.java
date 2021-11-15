@@ -22,7 +22,8 @@ public class Simulator {
      * Dummy JavaDoc.
      */
     public Simulator(List<Double> arrivalTimes, List<Double> serveTimes, int numberOfServers,
-            int maxQueueLength, LinkedList<Double> restTimes, boolean dumbCustomers)
+            int maxQueueLength, LinkedList<Double> restTimes, boolean dumbCustomers,
+            int selfcheckoutCount)
             throws Exception {
         this.eventList = new PriorityQueue<Event>(new EventComparator());
         this.finalEventList = new PriorityQueue<Event>(new EventComparator());
