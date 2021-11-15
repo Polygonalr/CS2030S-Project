@@ -10,7 +10,6 @@ public class Simulator {
     private final PriorityQueue<Event> eventList;
     private final PriorityQueue<Event> finalEventList;
     private final ServerList serverList;
-    private final LinkedList<Double> restTimes;
     private final Statistics statistics;
     private final boolean dumbCustomers;
 
@@ -27,17 +26,15 @@ public class Simulator {
             throws Exception {
         this.eventList = new PriorityQueue<Event>(new EventComparator());
         this.finalEventList = new PriorityQueue<Event>(new EventComparator());
-        this.serverList = new ServerList();
+        this.serverList = new ServerList(restTimes);
         this.statistics = new Statistics();
-        this.restTimes = restTimes;
         this.dumbCustomers = dumbCustomers;
         for (int i = 0; i < numberOfServers; i++) {
             this.serverList.add(new Server(i + 1, maxQueueLength));
         }
         for (int i = 0; i < arrivalTimes.size(); i++) {
             Event arrivalEvent = new ArrivalEvent(new Customer(i + 1, arrivalTimes.get(i),
-                    serveTimes.get(i)), this.serverList, this.statistics, this.dumbCustomers,
-                    this.restTimes);
+                    serveTimes.get(i)), this.serverList, this.statistics, this.dumbCustomers);
             eventList.add(arrivalEvent);
             finalEventList.add(arrivalEvent);
         }
@@ -60,14 +57,6 @@ public class Simulator {
             toReturn += this.serverList.get(i).toString();
         }
         return toReturn;
-    }
-
-    private String getCurrentRestTimeQueueString() {
-        String toReturn = "[";
-        for (int i = 0; i < this.restTimes.size(); i++) {
-            toReturn += this.restTimes.get(i) + ", ";
-        }
-        return toReturn + "]";
     }
 
     private String getFullEventString() {
@@ -95,8 +84,7 @@ public class Simulator {
             });
             if (debug) {
                 System.out.println("\n" + this.getCurrentEventString() + "\n"
-                        + this.getCurrentServerQueueString() + "\n"
-                        + this.getCurrentRestTimeQueueString());
+                        + this.getCurrentServerQueueString());
             }
         }
         System.out.print(this.getFullEventString());

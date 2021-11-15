@@ -7,9 +7,8 @@ class RestEvent extends Event {
     private final Server server;
     private static final int REST_PRIORITY = 3;
 
-    RestEvent(double time, Customer customer, ServerList serverList, Server server,
-            LinkedList<Double> restTimes) {
-        super(time, customer, serverList, REST_PRIORITY, restTimes, false);
+    RestEvent(double time, Customer customer, ServerList serverList, Server server) {
+        super(time, customer, serverList, REST_PRIORITY, false);
         this.server = server;
         serverList.setUnavailable(server);
         serverList.setNextAvailableTime(server, time);

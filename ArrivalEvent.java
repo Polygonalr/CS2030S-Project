@@ -9,8 +9,8 @@ class ArrivalEvent extends Event {
     private static final int ARRIVAL_PRIORITY = 1;
 
     ArrivalEvent(Customer customer, ServerList serverList, Statistics statistics,
-            boolean dumbCustomers, LinkedList<Double> restTimes) {
-        super(customer, serverList, ARRIVAL_PRIORITY, restTimes);
+            boolean dumbCustomers) {
+        super(customer, serverList, ARRIVAL_PRIORITY);
         this.statistics = statistics;
         this.dumbCustomers = dumbCustomers;
     }
@@ -29,8 +29,7 @@ class ArrivalEvent extends Event {
                     super.getCustomer().getArrivalTime(),
                     super.getCustomer(),
                     super.getServerList(),
-                    server,
-                    this.getRestTimes()
+                    server
                 );
             }
         );
@@ -49,7 +48,6 @@ class ArrivalEvent extends Event {
                         super.getCustomer().getArrivalTime(), super.getCustomer(),
                         super.getServerList(),
                         server,
-                        this.getRestTimes(),
                         this.statistics
                     );
                 }
@@ -58,7 +56,7 @@ class ArrivalEvent extends Event {
         // Or else, transform to LeaveEvent
         Event newEvent = transformedEvent.orElseGet(() -> {
             statistics.countLeftCustomer();
-            return new LeaveEvent(super.getCustomer(), super.getServerList(), this.getRestTimes());
+            return new LeaveEvent(super.getCustomer(), super.getServerList());
         });
         return Optional.<Event>of(newEvent);
     }

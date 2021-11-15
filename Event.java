@@ -8,22 +8,19 @@ abstract class Event {
     private final double time;
     private final Customer customer;
     private final ServerList serverList;
-    private final LinkedList<Double> restTimes;
     // whether to add to the final Event List to print, for recursive WaitEvents and RestEvents
     private final boolean addToFinal;
 
-    Event(double time, Customer customer, ServerList serverList, int priority,
-            LinkedList<Double> restTimes, boolean addToFinal) {
+    Event(double time, Customer customer, ServerList serverList, int priority, boolean addToFinal) {
         this.time = time;
         this.customer = customer;
         this.serverList = serverList;
         this.priority = priority;
-        this.restTimes = restTimes;
         this.addToFinal = addToFinal;
     }
 
-    Event(Customer customer, ServerList serverList, int priority, LinkedList<Double> restTimes) {
-        this(customer.getArrivalTime(), customer, serverList, priority, restTimes, true);
+    Event(Customer customer, ServerList serverList, int priority) {
+        this(customer.getArrivalTime(), customer, serverList, priority, true);
     }
 
     public double getTime() {
@@ -44,10 +41,6 @@ abstract class Event {
 
     public boolean toAddToFinal() {
         return this.addToFinal;
-    }
-
-    public LinkedList<Double> getRestTimes() {
-        return this.restTimes;
     }
 
     String descriptivePrint(String s) {

@@ -2,10 +2,17 @@ package cs2030.simulator;
 
 import java.util.Optional;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 class ServerList extends ArrayList<Server> {
+    private final LinkedList<Double> restTimes;
     private static final double BIG_DOUBLE = 99999.9;
     private static final int BIG_INT = 99999;
+
+    ServerList(LinkedList<Double> restTimes) {
+        super();
+        this.restTimes = restTimes;
+    }
 
     public Optional<Server> getAvailableServer() {
         // Check for any non-serving Servers first
@@ -57,6 +64,14 @@ class ServerList extends ArrayList<Server> {
             }
         }
         return chosenServer;
+    }
+
+    // Updates server status and returns the time the server rests until
+    public double rest(Server server, double currentTime) {
+        double restUntil = currentTime + this.restTimes.poll();
+        this.setUnavailable(server);
+        this.setNextAvailableTime(server, restUntil);
+        return restUntil;
     }
 
     public boolean setUnavailable(Server s) throws ArrayIndexOutOfBoundsException {

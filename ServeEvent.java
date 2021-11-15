@@ -7,9 +7,8 @@ class ServeEvent extends Event {
     private final Server server;
     private static final int SERVE_PRIORITY = 2;
 
-    ServeEvent(double time, Customer customer, ServerList serverList, Server server,
-            LinkedList<Double> restTimes) {
-        super(time, customer, serverList, SERVE_PRIORITY, restTimes, true);
+    ServeEvent(double time, Customer customer, ServerList serverList, Server server) {
+        super(time, customer, serverList, SERVE_PRIORITY, true);
         this.server = server;
         serverList.setUnavailable(server);
         serverList.setNextAvailableTime(server, time);
@@ -17,7 +16,7 @@ class ServeEvent extends Event {
 
     public Optional<Event> execute() {
         return Optional.of(new DoneEvent(this.getDoneTime(), super.getCustomer(),
-                    super.getServerList(), server, this.getRestTimes()));
+                    super.getServerList(), server));
     }
 
     public double getDoneTime() {

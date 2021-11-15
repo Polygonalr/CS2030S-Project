@@ -9,14 +9,14 @@ class WaitEvent extends Event {
     private static final int WAIT_PRIORITY = 5;
 
     WaitEvent(double time, Customer customer, ServerList serverList, Server server,
-            LinkedList<Double> restTimes, Statistics statistics) {
-        super(time, customer, serverList, WAIT_PRIORITY, restTimes, true);
+            Statistics statistics) {
+        super(time, customer, serverList, WAIT_PRIORITY, true);
         this.server = server;
         this.statistics = statistics;
     }
 
     WaitEvent(WaitEvent w, double time) {
-        super(time, w.getCustomer(), w.getServerList(), WAIT_PRIORITY, w.getRestTimes(), false);
+        super(time, w.getCustomer(), w.getServerList(), WAIT_PRIORITY, false);
         this.server = w.server;
         this.statistics = w.statistics;
     }
@@ -30,7 +30,7 @@ class WaitEvent extends Event {
         if (this.getServerList().isAvailable(this.server)) {
             return Optional.<Event>of(
                 new ServeEvent(serverNextAvailableTime, super.getCustomer(),
-                        super.getServerList(), server, this.getRestTimes())
+                        super.getServerList(), server)
             );
         }
         return Optional.<Event>of(
