@@ -3,6 +3,7 @@ package cs2030.simulator;
 import java.util.PriorityQueue;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -33,6 +34,11 @@ public class Simulator {
         for (int i = 0; i < numberOfServers; i++) {
             this.serverList.add(new Server(i + 1, maxQueueLength));
         }
+        LinkedList<Map.Entry<Customer, Double>> commonQueue =
+                new LinkedList<Map.Entry<Customer, Double>>();
+        for (int i = numberOfServers; i < numberOfServers + selfcheckoutCount; i++) {
+            this.serverList.add(new SelfCheckout(i + 1, maxQueueLength, commonQueue));
+        }
         for (int i = 0; i < arrivalTimes.size(); i++) {
             Event arrivalEvent = new ArrivalEvent(new Customer(i + 1, arrivalTimes.get(i),
                     serveTimes.get(i)), this.serverList, this.statistics, this.dumbCustomers);
@@ -55,7 +61,7 @@ public class Simulator {
     private String getCurrentServerQueueString() {
         String toReturn = "";
         for (int i = 0; i < this.serverList.size(); i++) {
-            toReturn += this.serverList.get(i).toString();
+            toReturn += this.serverList.get(i).debugPrint();
         }
         return toReturn;
     }

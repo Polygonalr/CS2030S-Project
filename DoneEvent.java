@@ -22,7 +22,7 @@ class DoneEvent extends Event {
 
     @Override
     public String toString() {
-        return super.descriptivePrint(String.format("%d done serving by server %d",
-                super.getCustomer().getId(), this.server.getId()));
+        return super.descriptivePrint(String.format("%d done serving by %s",
+                super.getCustomer().getId(), this.server.toString()));
     }
 }

@@ -40,7 +40,7 @@ class WaitEvent extends Event {
 
     @Override
     public String toString() {
-        return super.descriptivePrint(String.format("%d waits at server %d",
-                super.getCustomer().getId(), this.server.getId()));
+        return super.descriptivePrint(String.format("%d waits at %s",
+                super.getCustomer().getId(), this.server.toString()));
     }
 }

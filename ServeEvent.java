@@ -25,7 +25,7 @@ class ServeEvent extends Event {
 
     @Override
     public String toString() {
-        return super.descriptivePrint(String.format("%d serves by server %d",
-                super.getCustomer().getId(), this.server.getId()));
+        return super.descriptivePrint(String.format("%d serves by %s",
+                super.getCustomer().getId(), this.server.toString()));
     }
 }

@@ -68,12 +68,16 @@ class ServerList extends ArrayList<Server> {
     }
 
     // Updates server status and returns the time the server rests until
-    public double rest(Server server, double currentTime) {
-        double restUntil = currentTime + this.restTimes.poll();
-        this.setUnavailable(server);
-        this.setNextAvailableTime(server, restUntil);
-        return restUntil;
+    public double rest(Server s, double currentTime) {
+        int index = this.indexOf(s);
+        if (index == -1) {
+            throw new ArrayIndexOutOfBoundsException("Can't find server to set availability!");
+        }
+        this.set(index, this.get(index).rest(currentTime, this.restTimes));
+        return this.get(index).getNextAvailableTime();
     }
+
+    // -------------- Extension of server methods below --------------
 
     public boolean setUnavailable(Server s) throws ArrayIndexOutOfBoundsException {
         int index = this.indexOf(s);
@@ -127,12 +131,12 @@ class ServerList extends ArrayList<Server> {
         return true;
     }
 
-    public boolean serveNext(Server s) {
+    public Optional<Map.Entry<Customer, Double>> serveNext(Server s) {
         int index = this.indexOf(s);
         if (index == -1) {
             throw new ArrayIndexOutOfBoundsException("Can't find server to set availability!");
         }
         this.set(index, this.get(index).serveNext());
-        return true;
+        return this.get(index).getCurrentCustomer();
     }
 }
