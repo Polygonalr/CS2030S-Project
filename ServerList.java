@@ -38,33 +38,33 @@ class ServerList extends ArrayList<Server> {
             return chosenServer;
         }
         
-        if (greedy) {
-            // server with shortest queue
-            int shortestQueue = BIG_INT;
-            Optional<Server> chosenServer = Optional.empty();
-            // Check for any Servers first
-            for (int i = 0; i < this.size(); i++) {
-                if (this.get(i).hasQueueSlot()
-                        && this.get(i).getQueueLength() < shortestQueue) {
-                    chosenServer = Optional.<Server>of(this.get(i));
-                    shortestQueue = this.get(i).getQueueLength();
-                }
-            }
-            return chosenServer;
-        }
-        
-        // server with shortest wait time
-        double fastestAvailTime = BIG_DOUBLE;
+        // if (greedy) {
+        // server with shortest queue
+        int shortestQueue = BIG_INT;
         Optional<Server> chosenServer = Optional.empty();
-        // Check for any Servers first
+        // Check for any non-serving Servers first
         for (int i = 0; i < this.size(); i++) {
             if (this.get(i).hasQueueSlot()
-                    && this.get(i).getNextAvailableTime() < fastestAvailTime) {
+                    && this.get(i).getQueueLength() < shortestQueue) {
                 chosenServer = Optional.<Server>of(this.get(i));
-                fastestAvailTime = this.get(i).getNextAvailableTime();
+                shortestQueue = this.get(i).getQueueLength();
             }
         }
         return chosenServer;
+        // }
+        
+        // // server with shortest wait time
+        // double fastestAvailTime = BIG_DOUBLE;
+        // Optional<Server> chosenServer = Optional.empty();
+        // // Check for any Servers first
+        // for (int i = 0; i < this.size(); i++) {
+        //     if (this.get(i).hasQueueSlot()
+        //             && this.get(i).getNextAvailableTime() < fastestAvailTime) {
+        //         chosenServer = Optional.<Server>of(this.get(i));
+        //         fastestAvailTime = this.get(i).getNextAvailableTime();
+        //     }
+        // }
+        // return chosenServer;
     }
 
     // Updates server status and returns the time the server rests until

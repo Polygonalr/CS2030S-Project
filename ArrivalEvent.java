@@ -43,7 +43,7 @@ class ArrivalEvent extends Event {
                     // this.statistics.addWaitTime(server.getNextAvailableTime() - super.getTime());
                     super.getServerList().addCustomerToQueue(server, Pair.of(
                         super.getCustomer(),
-                        server.getNextAvailableTime() + super.getCustomer().getServeTime()
+                        0.0
                     ));
                     return new WaitEvent(
                         super.getCustomer().getArrivalTime(), super.getCustomer(),
@@ -64,6 +64,6 @@ class ArrivalEvent extends Event {
 
     @Override
     public String toString() {
-        return super.descriptivePrint(String.format("%d arrives", super.getCustomer().getId()));
+        return super.descriptivePrint("arrives");
     }
 }

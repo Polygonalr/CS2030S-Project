@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public class Simulator {
     private final PriorityQueue<Event> eventList;
     private final PriorityQueue<Event> finalEventList;
     private final ServerList serverList;
     private final Statistics statistics;
-    private final boolean dumbCustomers;
 
     private static final int STATS_MAX_SIZE = 3;
     private static final int I_TOTAL_WAIT = 0;
@@ -21,6 +21,7 @@ public class Simulator {
 
     /**
      * Dummy JavaDoc.
+     * This is for Main1-4.
      */
     public Simulator(List<Double> arrivalTimes, List<Double> serveTimes, int numberOfServers,
             int maxQueueLength, LinkedList<Double> restTimes, boolean dumbCustomers,
@@ -30,7 +31,6 @@ public class Simulator {
         this.finalEventList = new PriorityQueue<Event>(new EventComparator());
         this.serverList = new ServerList(restTimes);
         this.statistics = new Statistics();
-        this.dumbCustomers = dumbCustomers;
         for (int i = 0; i < numberOfServers; i++) {
             this.serverList.add(new Server(i + 1, maxQueueLength));
         }
@@ -40,12 +40,68 @@ public class Simulator {
             this.serverList.add(new SelfCheckout(i + 1, maxQueueLength, commonQueue));
         }
         for (int i = 0; i < arrivalTimes.size(); i++) {
-            Event arrivalEvent = new ArrivalEvent(new Customer(i + 1, arrivalTimes.get(i),
-                    serveTimes.get(i)), this.serverList, this.statistics, this.dumbCustomers);
+            Customer newCustomer = new Customer(i + 1, arrivalTimes.get(i), serveTimes.get(i));
+            Event arrivalEvent = new ArrivalEvent(newCustomer, this.serverList,
+                    this.statistics, !newCustomer.isGreedy());
             eventList.add(arrivalEvent);
             finalEventList.add(arrivalEvent);
         }
     }
+
+    // Main5 initialization with Supplier<Double> for serveTimes and greedyList
+    public Simulator(List<Double> arrivalTimes, Supplier<Double> serveTimes, int numberOfServers,
+            int maxQueueLength, LinkedList<Double> restTimes, List<Boolean> greedyList,
+            int selfcheckoutCount) throws Exception {
+        this.eventList = new PriorityQueue<Event>(new EventComparator());
+        this.finalEventList = new PriorityQueue<Event>(new EventComparator());
+        this.serverList = new ServerList(restTimes);
+        this.statistics = new Statistics();
+        for (int i = 0; i < numberOfServers; i++) {
+            this.serverList.add(new Server(i + 1, maxQueueLength));
+        }
+        LinkedList<Map.Entry<Customer, Double>> commonQueue =
+                new LinkedList<Map.Entry<Customer, Double>>();
+        for (int i = numberOfServers; i < numberOfServers + selfcheckoutCount; i++) {
+            this.serverList.add(new SelfCheckout(i + 1, maxQueueLength, commonQueue));
+        }
+        for (int i = 0; i < arrivalTimes.size(); i++) {
+            Customer newCustomer = new Customer(i + 1, arrivalTimes.get(i), serveTimes,
+                    greedyList.get(i));
+            Event arrivalEvent = new ArrivalEvent(newCustomer, this.serverList,
+                    this.statistics, !newCustomer.isGreedy());
+            eventList.add(arrivalEvent);
+            finalEventList.add(arrivalEvent);
+        }
+    }
+
+    // I do not wish to pollute my Simulator anymore so this has to be done.
+    // ------------------ Methods to expose RandomGenerator to Main5 -----------------------
+
+    public static RandomGenerator randGenConstructor(int seed, double arrivalRate,
+            double serviceRate, double restingRate) {
+        return new RandomGenerator(seed, arrivalRate, serviceRate, restingRate);
+    }
+
+    public static double genCustomerType(RandomGenerator rg) {
+        return rg.genCustomerType();
+    }
+
+    public static double genInterArrivalTime(RandomGenerator rg) {
+        return rg.genInterArrivalTime();
+    }
+
+    public static double genRandomRest(RandomGenerator rg) {
+        return rg.genRandomRest();
+    }
+
+    public static double genRestPeriod(RandomGenerator rg) {
+        return rg.genRestPeriod();
+    }
+
+    public static double genServiceTime(RandomGenerator rg) {
+        return rg.genServiceTime();
+    }
+    // -------------------------------------------------------------------------------------
 
     // For debugging!
     private String getCurrentEventString() {

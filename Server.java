@@ -79,10 +79,10 @@ class Server implements Comparable<Server> {
         return this.nextAvailableTime;
     }
 
-    public double getDoneTimeOf(Customer customer) {
-        return queue.stream().filter(x -> x.getKey().equals(customer)).findFirst()
-                .<Double>map(x -> x.getValue()).orElse(0.0);
-    }
+    // public double getDoneTimeOf(Customer customer) {
+    //     return queue.stream().filter(x -> x.getKey().equals(customer)).findFirst()
+    //             .<Double>map(x -> x.getValue()).orElse(0.0);
+    // }
 
     public Server serveNext() {
         Optional<Map.Entry<Customer, Double>> nextCustomer = Optional.ofNullable(this.queue.poll());
@@ -94,8 +94,8 @@ class Server implements Comparable<Server> {
         this.currentCustomer.ifPresent​(
             unused -> {
                 if (this.queue.size() >= this.maxQueueLength) {
-                throw new ArrayIndexOutOfBoundsException(String.format("Error adding "
-                        + "Customer to a full queue for server %d", this.id));
+                    throw new ArrayIndexOutOfBoundsException(String.format("Error adding "
+                            + "Customer to a full queue for server %d", this.id));
                 }
                 this.queue.addLast(newCustomer);
             }
@@ -140,7 +140,8 @@ class Server implements Comparable<Server> {
     }
 
     public String debugPrint() {
-        String toReturn = String.format("Server %d: %s [",  this.id, this.currentCustomer.map(x -> x.getKey().toString()).orElse("None"));
+        String toReturn = String.format("Server %d: %s [",  this.id, this.currentCustomer
+                .map(x -> x.getKey().toString()).orElse("None"));
         for (int i = 0; i < this.queue.size(); i++) {
             toReturn += queue.get(i).getKey().toString() + ", ";
         }

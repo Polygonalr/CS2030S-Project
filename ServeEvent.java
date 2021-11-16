@@ -19,13 +19,12 @@ class ServeEvent extends Event {
                     super.getServerList(), server));
     }
 
-    public double getDoneTime() {
+    private double getDoneTime() {
         return super.getCustomer().getServeTime() + super.getTime();
     }
 
     @Override
     public String toString() {
-        return super.descriptivePrint(String.format("%d serves by %s",
-                super.getCustomer().getId(), this.server.toString()));
+        return super.descriptivePrint(String.format("serves by %s", this.server.toString()));
     }
 }

@@ -53,7 +53,7 @@ abstract class Event {
     }
 
     String descriptivePrint(String s) {
-        return String.format("%.3f %s", this.time, s);
+        return String.format("%.3f %s %s", this.time, this.customer.toString(), s);
     }
 
     @Override

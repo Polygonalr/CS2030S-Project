@@ -16,6 +16,6 @@ class LeaveEvent extends Event {
 
     @Override
     public String toString() {
-        return super.descriptivePrint(String.format("%d leaves", super.getCustomer().getId()));
+        return super.descriptivePrint("leaves");
     }
 }
