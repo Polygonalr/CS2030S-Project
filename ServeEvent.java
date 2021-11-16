@@ -8,7 +8,7 @@ class ServeEvent extends Event {
     private static final int SERVE_PRIORITY = 2;
 
     ServeEvent(double time, Customer customer, ServerList serverList, Server server) {
-        super(time, customer, serverList, SERVE_PRIORITY, true);
+        super(time, customer, serverList, SERVE_PRIORITY, true, false);
         this.server = server;
         serverList.setUnavailable(server);
         serverList.setNextAvailableTime(server, time);

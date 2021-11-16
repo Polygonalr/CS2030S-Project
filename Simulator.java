@@ -66,8 +66,44 @@ public class Simulator {
         return toReturn;
     }
 
+    private void calculateStatistics() {
+        // Copying finalEventList into ArrayList<String>
+        PriorityQueue<Event> finalEventListCopy = new PriorityQueue<Event>(this.finalEventList);
+        ArrayList<Event> finalEventListCopyCopy = new ArrayList<Event>();
+        ArrayList<String> finalEventListStrings = new ArrayList<String>();
+        while (!finalEventListCopy.isEmpty()) {
+            Event nextEvent = finalEventListCopy.poll();
+            if (nextEvent.toAddToFinal()) {
+                finalEventListCopyCopy.add(nextEvent);
+                finalEventListStrings.add(nextEvent.toString());
+            }
+        }
+
+        // Only adding waiting time to statistics as other statistics are calculated within
+        // respective Event classes
+        finalEventListCopyCopy.forEach(e -> {
+            if (e.toString().contains("arrives")) {
+                int customerId = e.getCustomer().getId();
+                double arrivalTime = e.getTime();
+                // Extracts the ServeEvent string from the finalEventList that matches
+                // the customerNumber, then extracts the timing from that ServeEvent
+                // If ServeEvent does not exist, defaults to arrivalTime.
+                double servesTime = finalEventListCopyCopy.stream()
+                        .filter(x -> x.getCustomer().getId() == customerId
+                                && x.toString().contains("serves by"))
+                        .findFirst()
+                        .map(x -> x.getTime())
+                        .orElse(arrivalTime);
+                this.statistics.addWaitTime(servesTime - arrivalTime);
+            }
+        });
+    }
+
     private String getFullEventString() {
-        PriorityQueue<Event> finalEventListCopy = new PriorityQueue<Event>(finalEventList);
+        this.calculateStatistics();
+
+        // Final event string builder
+        PriorityQueue<Event> finalEventListCopy = new PriorityQueue<Event>(this.finalEventList);
         String toReturn = "";
         while (!finalEventListCopy.isEmpty()) {
             Event nextEvent = finalEventListCopy.poll();
@@ -84,6 +120,25 @@ public class Simulator {
     public void simulate(boolean debug) throws Exception {
         while (!this.eventList.isEmpty()) {
             Event currentEvent = this.eventList.poll();
+
+            // ------- UGLY CODE INCOMING -------
+            if (currentEvent.isRestEvent()) {
+                // create and push ServeEvent here
+                Server s = currentEvent.freedServer()
+                        .orElseThrow(() -> new Exception("illegal freedServer called"));
+                currentEvent.dequeue().ifPresent(x -> {
+                    Event newServeEvent = new ServeEvent(
+                        currentEvent.getTime(),
+                        x.getKey(),
+                        this.serverList,
+                        s
+                    );
+                    this.eventList.add(newServeEvent);
+                    this.finalEventList.add(newServeEvent);
+                });
+            }
+            // ----------------------------------
+
             Optional<Event> newEvent = currentEvent.execute();
             newEvent.ifPresent(event -> {
                 this.eventList.add(event);

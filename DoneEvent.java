@@ -8,7 +8,7 @@ class DoneEvent extends Event {
     private static final int DONE_PRIORITY = 4;
 
     DoneEvent(double time, Customer customer, ServerList serverList, Server server) {
-        super(time, customer, serverList, DONE_PRIORITY, true);
+        super(time, customer, serverList, DONE_PRIORITY, true, false);
         this.server = server;
         serverList.setUnavailable(server);
         serverList.setNextAvailableTime(server, time);
